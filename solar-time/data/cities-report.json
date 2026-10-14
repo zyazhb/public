@@ -1,0 +1,732 @@
+{
+  "count": 34160,
+  "withZh": 11221,
+  "zhCoverage": 0.3284836065573771,
+  "remapped": [
+    {
+      "id": 1279501,
+      "en": "Zepu",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1279590,
+      "en": "Yengisar",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1280037,
+      "en": "Shache",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1280249,
+      "en": "Qiemo",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1280267,
+      "en": "Qarek",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1280361,
+      "en": "Oytograk",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1280541,
+      "en": "Qaraqash",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1280691,
+      "en": "Lop",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1280763,
+      "en": "Langru",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1280822,
+      "en": "Kokyar",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1280849,
+      "en": "Kashgar",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1280873,
+      "en": "Kaqun",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1281019,
+      "en": "Gujangbagh",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1281278,
+      "en": "Elixku",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1281622,
+      "en": "Langgar",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1281743,
+      "en": "Artux",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1346629,
+      "en": "Layka",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1346630,
+      "en": "Saybag",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1346644,
+      "en": "Arix",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1346645,
+      "en": "Xambabazar",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529001,
+      "en": "Yuli",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529031,
+      "en": "Yanqi",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529046,
+      "en": "Xinyuan",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529085,
+      "en": "Wujiaqu",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529088,
+      "en": "Wensu",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529099,
+      "en": "Wusu",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529102,
+      "en": "Ürümqi",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529114,
+      "en": "Turpan",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529167,
+      "en": "Tacheng",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529195,
+      "en": "Shihezi",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529239,
+      "en": "Sandaohezi",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529279,
+      "en": "Chapchal",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529333,
+      "en": "Luntai",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529363,
+      "en": "Xincheng",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529376,
+      "en": "Korla",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529377,
+      "en": "Qarasu",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529401,
+      "en": "Karamay",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529420,
+      "en": "Jelilyüzi",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529435,
+      "en": "Ghulja",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529451,
+      "en": "Tewulike",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529452,
+      "en": "Hoxtolgay",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529475,
+      "en": "Hejing",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529484,
+      "en": "Hami",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529504,
+      "en": "Fuyun",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529522,
+      "en": "Emin",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529528,
+      "en": "Xininglu",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529529,
+      "en": "Dure",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529569,
+      "en": "Changji",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529574,
+      "en": "Burqin",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529584,
+      "en": "Bohu",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529594,
+      "en": "Beitun",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529626,
+      "en": "Baijiantan",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529641,
+      "en": "Ālā'ĕr",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529651,
+      "en": "Jinshanlu",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1529660,
+      "en": "Aqsu",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1538338,
+      "en": "Oymak",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1538369,
+      "en": "Kax",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1538370,
+      "en": "Baytokay",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1538371,
+      "en": "Yengitam",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1538375,
+      "en": "Dadamtu",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1538377,
+      "en": "Yuqunweng",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 1538378,
+      "en": "Panjim",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 8562558,
+      "en": "Mugala",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 8992399,
+      "en": "Bageqi",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 8992603,
+      "en": "Tawakule",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 8992614,
+      "en": "Han’airike",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 9019368,
+      "en": "Ying’awati",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 9884157,
+      "en": "Taxkowrük",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 9884161,
+      "en": "Onyar",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 11694038,
+      "en": "Huocheng",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 11890268,
+      "en": "Huoshilafu",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 11890878,
+      "en": "Gulebage",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 11895138,
+      "en": "Sandaoling Lutiankuang Wuqi Nongchang",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 11916190,
+      "en": "Siyeke",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12022102,
+      "en": "Tumxuk",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12258245,
+      "en": "Kageleke",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12420915,
+      "en": "Alamaiti",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12420916,
+      "en": "Arele",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12420917,
+      "en": "Awati",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12420918,
+      "en": "Azhatebage",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12420919,
+      "en": "Bage'awati",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12420920,
+      "en": "Baishikante",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12420927,
+      "en": "Dunbage",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12420928,
+      "en": "Huangdi",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12420930,
+      "en": "Kuoshi'airike",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12420931,
+      "en": "Mixia",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12420932,
+      "en": "Paikeqi",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12420934,
+      "en": "Tage'erqi",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12420983,
+      "en": "Tuomuwusitang",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12420984,
+      "en": "Wudalike",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12440484,
+      "en": "Yigai'erqi",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12440486,
+      "en": "Yishikuli",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12440489,
+      "en": "Bayandai",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12440491,
+      "en": "Hudiyuzi",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12440503,
+      "en": "Arewusitang",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12440504,
+      "en": "Awuliya",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12450711,
+      "en": "Samuyuzi",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12450712,
+      "en": "Weiwu'eryuqiwen",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12450713,
+      "en": "Arele",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12450714,
+      "en": "Jiayi",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12450717,
+      "en": "Buzhake",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12450721,
+      "en": "Yisilamu'awati",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12450722,
+      "en": "Akesalayi",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12450725,
+      "en": "Jiahanbage",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12450862,
+      "en": "Ka'ersai",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12450864,
+      "en": "Kuiya",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12450865,
+      "en": "Kuoyiqi",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12450866,
+      "en": "Manglai",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12450867,
+      "en": "Puqiakeqi",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12450868,
+      "en": "Tuohula",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12450869,
+      "en": "Tuwaite",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12450870,
+      "en": "Wu'erqi",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12450871,
+      "en": "Yawa",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 12450873,
+      "en": "Zhawa",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 13527308,
+      "en": "Nossa Senhora de Fátima",
+      "from": "Asia/Macau",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 13527315,
+      "en": "Santo António",
+      "from": "Asia/Macau",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 13527316,
+      "en": "São Lázaro",
+      "from": "Asia/Macau",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 13527318,
+      "en": "São Lourenço",
+      "from": "Asia/Macau",
+      "to": "Asia/Shanghai"
+    },
+    {
+      "id": 13561750,
+      "en": "Huyanghe",
+      "from": "Asia/Urumqi",
+      "to": "Asia/Shanghai"
+    }
+  ],
+  "gzipBytes": [
+    379230,
+    622517
+  ],
+  "tierPop": 50000,
+  "tierCounts": [
+    12391,
+    21769
+  ],
+  "lonLatDecimals": 5,
+  "nameLines": 19228547
+}
