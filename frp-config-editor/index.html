@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>frp 配置编辑器</title>
+<style>
+:root{
+  --bg:#f6f7f9; --card:#fff; --fg:#1d2433; --muted:#6b7385; --line:#e1e4ea;
+  --accent:#2f6df6; --accent-fg:#fff; --danger:#d93a3a; --ok:#1e9b57; --code-bg:#fbfbfc;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#14161b; --card:#1d2027; --fg:#e6e8ee; --muted:#8c93a5; --line:#2e323c;
+    --accent:#5b8cff; --accent-fg:#0b1020; --danger:#ff6b6b; --ok:#4cc38a; --code-bg:#171a20;}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);
+  display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding:10px 16px}
+header h1{font-size:16px;margin:0 8px 0 0}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;border-radius:0;background:transparent;color:var(--fg);padding:6px 14px}
+.seg button.on{background:var(--accent);color:var(--accent-fg)}
+.spacer{flex:1}
+button{font:inherit;color:var(--fg);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+button.danger{color:var(--danger)}
+button.small{padding:2px 8px;font-size:12px}
+main{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;padding:16px;max-width:1400px;margin:0 auto}
+@media (min-width:960px){main{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}
+  #editor{position:sticky;top:64px;height:calc(100vh - 80px)}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.card h2{font-size:14px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px 12px}
+label.f{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted)}
+input,select,textarea{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 8px;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(--accent) 40%,transparent);border-color:var(--accent)}
+details summary{cursor:pointer;color:var(--muted);margin:8px 0}
+.proxy{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:10px;background:var(--bg)}
+.proxy-head{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.proxy-head input.name{font-weight:600;max-width:240px}
+.row{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+#editor{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;min-height:360px}
+#editor h2{font-size:14px;margin:0 0 8px;display:flex;justify-content:space-between;align-items:center}
+#src{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;background:var(--code-bg);resize:none;white-space:pre;tab-size:2}
+#msg{min-height:20px;font-size:12px;margin-top:6px;color:var(--ok)}
+#msg.err{color:var(--danger)}
+#drop{position:fixed;inset:0;background:color-mix(in srgb,var(--accent) 18%,transparent);border:3px dashed var(--accent);display:none;align-items:center;justify-content:center;font-size:22px;z-index:20;pointer-events:none}
+.hint{color:var(--muted);font-size:12px;margin:0 0 10px}
+</style>
+</head>
+<body>
+<header>
+  <h1>frp 配置编辑器</h1>
+  <div class="seg" id="modeSeg">
+    <button data-m="client">frpc 客户端</button>
+    <button data-m="server">frps 服务端</button>
+  </div>
+  <span class="spacer"></span>
+  <button id="btnNew">新建</button>
+  <button id="btnOpen">打开文件…</button>
+  <button id="btnCopy">复制</button>
+  <button id="btnDl" class="primary">下载</button>
+  <input type="file" id="file" accept=".toml,.txt,text/plain" hidden>
+</header>
+<main>
+  <section id="form"></section>
+  <section id="editor">
+    <h2><span>TOML 源码 <span style="color:var(--muted);font-weight:400">(可直接编辑,表单同步)</span></span></h2>
+    <textarea id="src" spellcheck="false"></textarea>
+    <div id="msg"></div>
+  </section>
+</main>
+<div id="drop">松开以导入配置文件</div>
+
+<script>
+// ==CORE==
+const isObj = v => v !== null && typeof v === 'object' && !Array.isArray(v);
+
+function tomlParse(src) {
+  let i = 0; const n = src.length;
+  const err = m => { throw new Error('第 ' + src.slice(0, i).split('\n').length + ' 行: ' + m); };
+  const isWs = c => c === ' ' || c === '\t' || c === '\r';
+  const skipWs = () => { while (i < n && isWs(src[i])) i++; };
+  const skipComment = () => { if (src[i] === '#') while (i < n && src[i] !== '\n') i++; };
+  const skipAll = () => { for (;;) { skipWs(); if (src[i] === '#') skipComment(); else if (src[i] === '\n') i++; else break; } };
+
+  function esc() {
+    i++; const c = src[i++];
+    const m = { n: '\n', t: '\t', r: '\r', '"': '"', '\\': '\\', b: '\b', f: '\f' };
+    if (c !== undefined && Object.prototype.hasOwnProperty.call(m, c)) return m[c];
+    if (c === 'u' || c === 'U') { const len = c === 'u' ? 4 : 8; const h = src.substr(i, len); i += len; return String.fromCodePoint(parseInt(h, 16)); }
+    if (c === '\n') { while (i < n && /\s/.test(src[i])) i++; return ''; }
+    err('无效的转义字符');
+  }
+  function parseString() {
+    const q = src[i];
+    if (src.substr(i, 3) === q + q + q) {
+      i += 3; if (src[i] === '\n') i++; else if (src.substr(i, 2) === '\r\n') i += 2;
+      let out = '';
+      for (;;) {
+        if (i >= n) err('多行字符串未闭合');
+        if (src.substr(i, 3) === q + q + q) { i += 3; return out; }
+        if (q === '"' && src[i] === '\\') out += esc(); else out += src[i++];
+      }
+    }
+    i++; let out = '';
+    for (;;) {
+      if (i >= n || src[i] === '\n') err('字符串未闭合');
+      const c = src[i];
+      if (c === q) { i++; return out; }
+      if (q === '"' && c === '\\') out += esc(); else { out += c; i++; }
+    }
+  }
+  function parseKey() {
+    const segs = [];
+    for (;;) {
+      skipWs(); let s;
+      if (src[i] === '"' || src[i] === "'") s = parseString();
+      else { const st = i; while (i < n && /[A-Za-z0-9_-]/.test(src[i])) i++; if (st === i) err('无效的键名'); s = src.slice(st, i); }
+      segs.push(s); skipWs();
+      if (src[i] === '.') { i++; continue; }
+      return segs;
+    }
+  }
+  function descend(o, segs) {
+    for (const s of segs) {
+      if (o[s] === undefined) o[s] = {};
+      let v = o[s];
+      if (Array.isArray(v)) v = v[v.length - 1];
+      if (!isObj(v)) err('键名冲突: ' + s);
+      o = v;
+    }
+    return o;
+  }
+  function assign(o, segs, v) {
+    const t = descend(o, segs.slice(0, -1)); const k = segs[segs.length - 1];
+    if (Object.prototype.hasOwnProperty.call(t, k)) err('重复的键: ' + k);
+    t[k] = v;
+  }
+  function parseValue() {
+    skipWs(); const c = src[i];
+    if (c === '"' || c === "'") return parseString();
+    if (c === '[') {
+      i++; const arr = [];
+      for (;;) {
+        skipAll(); if (src[i] === ']') { i++; return arr; }
+        arr.push(parseValue()); skipAll();
+        if (src[i] === ',') { i++; continue; }
+        if (src[i] === ']') { i++; return arr; }
+        err('数组格式错误');
+      }
+    }
+    if (c === '{') {
+      i++; const o = {}; skipWs();
+      if (src[i] === '}') { i++; return o; }
+      for (;;) {
+        skipAll(); const k = parseKey(); skipWs();
+        if (src[i] !== '=') err('缺少 ='); i++;
+        assign(o, k, parseValue()); skipAll();
+        if (src[i] === ',') { i++; continue; }
+        if (src[i] === '}') { i++; return o; }
+        err('内联表格式错误');
+      }
+    }
+    const st = i; while (i < n && !/[\s,\]}#]/.test(src[i])) i++;
+    const t = src.slice(st, i);
+    if (t === 'true') return true; if (t === 'false') return false;
+    if (/^[+-]?\d[\d_]*(\.\d[\d_]*)?([eE][+-]?\d+)?$/.test(t)) return Number(t.replace(/_/g, ''));
+    if (/^0x[0-9a-fA-F_]+$/.test(t)) return parseInt(t.replace(/_/g, ''), 16);
+    if (/^\d{4}-\d\d-\d\d/.test(t)) return t;
+    err('无法识别的值: ' + (t || src[i] || '(空)'));
+  }
+
+  const root = {}; let cur = root;
+  for (;;) {
+    skipAll(); if (i >= n) break;
+    if (src[i] === '[') {
+      const isArr = src[i + 1] === '['; i += isArr ? 2 : 1;
+      const k = parseKey(); skipWs();
+      if (isArr) {
+        if (src.substr(i, 2) !== ']]') err('缺少 ]]'); i += 2;
+        const parent = descend(root, k.slice(0, -1)); const last = k[k.length - 1];
+        if (parent[last] === undefined) parent[last] = [];
+        else if (!Array.isArray(parent[last])) err('键名冲突: ' + last);
+        const o = {}; parent[last].push(o); cur = o;
+      } else {
+        if (src[i] !== ']') err('缺少 ]'); i++;
+        cur = descend(root, k);
+      }
+    } else {
+      const k = parseKey(); skipWs();
+      if (src[i] !== '=') err('缺少 ='); i++;
+      assign(cur, k, parseValue());
+    }
+    skipWs(); skipComment();
+    if (i < n && src[i] !== '\n') err('行尾有多余内容');
+  }
+  return root;
+}
+
+const bareKey = k => /^[A-Za-z0-9_-]+$/.test(k) ? k : JSON.stringify(k);
+function inl(v) {
+  if (Array.isArray(v)) return '[' + v.map(inl).join(', ') + ']';
+  if (isObj(v)) { const e = Object.entries(v); return e.length ? '{ ' + e.map(([k, x]) => bareKey(k) + ' = ' + inl(x)).join(', ') + ' }' : '{}'; }
+  if (typeof v === 'string') return JSON.stringify(v);
+  return String(v);
+}
+const isFlat = o => Object.values(o).every(x => !isObj(x) && !(Array.isArray(x) && x.some(isObj)));
+const isTableArr = (v, p) => Array.isArray(v) && v.length > 0 && v.every(isObj) &&
+  (/(^|\.)(proxies|visitors)$/.test(p) || !v.every(isFlat));
+
+function tomlStringify(obj) {
+  const out = [];
+  function emit(o, path, header) {
+    const scal = [], subs = [];
+    for (const [k, v] of Object.entries(o)) {
+      const p = path ? path + '.' + bareKey(k) : bareKey(k);
+      if (isObj(v) && Object.keys(v).length) subs.push([p, v, false]);
+      else if (isTableArr(v, p)) subs.push([p, v, true]);
+      else scal.push(bareKey(k) + ' = ' + inl(v));
+    }
+    if (header && !(header[1] !== '[' && !scal.length && subs.length) ) {
+      if (out.length) out.push('');
+      out.push(header);
+    } else if (header && header.startsWith('[[')) { if (out.length) out.push(''); out.push(header); }
+    scal.forEach(s => out.push(s));
+    for (const [p, v, arr] of subs) {
+      if (arr) v.forEach(el => emit(el, p, '[[' + p + ']]'));
+      else emit(v, p, '[' + p + ']');
+    }
+  }
+  emit(obj, '', null);
+  return out.join('\n') + '\n';
+}
+
+function getp(o, p) { return p.split('.').reduce((a, k) => a == null ? undefined : a[k], o); }
+function setp(o, p, v) {
+  const ks = p.split('.'), stack = []; let a = o;
+  for (let j = 0; j < ks.length - 1; j++) {
+    if (!isObj(a[ks[j]])) { if (v === undefined) return; a[ks[j]] = {}; }
+    stack.push([a, ks[j]]); a = a[ks[j]];
+  }
+  const last = ks[ks.length - 1];
+  if (v === undefined) delete a[last]; else a[last] = v;
+  for (let j = stack.length - 1; j >= 0; j--) {
+    const [par, k] = stack[j];
+    if (isObj(par[k]) && !Object.keys(par[k]).length) delete par[k]; else break;
+  }
+}
+// ==END CORE==
+
+/* ---------------- UI ---------------- */
+const LOG_LEVELS = ['', 'trace', 'debug', 'info', 'warn', 'error'];
+const PROXY_TYPES = ['tcp', 'udp', 'http', 'https', 'stcp', 'xtcp', 'sudp', 'tcpmux'];
+
+const CLIENT_FIELDS = [
+  { p: 'serverAddr', l: '服务器地址', ph: 'x.x.x.x 或域名' },
+  { p: 'serverPort', l: '服务器端口', t: 'num', ph: '7000' },
+  { p: 'auth.token', l: 'Token' },
+  { p: 'user', l: '用户名 user' },
+  { p: 'transport.protocol', l: '传输协议', t: 'select', o: ['', 'tcp', 'kcp', 'quic', 'websocket', 'wss'] },
+  { p: 'loginFailExit', l: '登录失败退出', t: 'bool' },
+  { p: 'log.level', l: '日志级别', t: 'select', o: LOG_LEVELS },
+  { p: 'log.to', l: '日志文件', ph: 'console 或文件路径' },
+];
+const ADV_WEB = [
+  { p: 'webServer.addr', l: '管理地址', ph: '127.0.0.1' },
+  { p: 'webServer.port', l: '管理端口', t: 'num' },
+  { p: 'webServer.user', l: '用户名' },
+  { p: 'webServer.password', l: '密码' },
+];
+const SERVER_FIELDS = [
+  { p: 'bindPort', l: '监听端口 bindPort', t: 'num', ph: '7000' },
+  { p: 'bindAddr', l: '监听地址 bindAddr', ph: '0.0.0.0' },
+  { p: 'auth.token', l: 'Token' },
+  { p: 'vhostHTTPPort', l: 'HTTP 端口', t: 'num', ph: '80' },
+  { p: 'vhostHTTPSPort', l: 'HTTPS 端口', t: 'num', ph: '443' },
+  { p: 'subDomainHost', l: '子域名根域名', ph: 'example.com' },
+  { p: 'maxPortsPerClient', l: '单客户端最大端口数', t: 'num' },
+  { p: 'transport.maxPoolCount', l: '连接池上限', t: 'num' },
+  { p: 'log.level', l: '日志级别', t: 'select', o: LOG_LEVELS },
+  { p: 'log.to', l: '日志文件', ph: 'console 或文件路径' },
+];
+const PROXY_COMMON_TOP = [
+  { p: 'type', l: '类型', t: 'select', o: PROXY_TYPES, rerender: true },
+  { p: 'localIP', l: '本地 IP', ph: '127.0.0.1' },
+  { p: 'localPort', l: '本地端口', t: 'num' },
+];
+const PROXY_BY_TYPE = {
+  tcp: [{ p: 'remotePort', l: '远程端口', t: 'num' }],
+  udp: [{ p: 'remotePort', l: '远程端口', t: 'num' }],
+  http: [
+    { p: 'customDomains', l: '自定义域名 (逗号分隔)', t: 'list' }, { p: 'subdomain', l: '子域名' },
+    { p: 'locations', l: '路径 (逗号分隔)', t: 'list' }, { p: 'hostHeaderRewrite', l: 'Host 重写' },
+    { p: 'httpUser', l: 'HTTP 用户名' }, { p: 'httpPassword', l: 'HTTP 密码' },
+  ],
+  https: [{ p: 'customDomains', l: '自定义域名 (逗号分隔)', t: 'list' }, { p: 'subdomain', l: '子域名' }],
+  tcpmux: [{ p: 'customDomains', l: '自定义域名 (逗号分隔)', t: 'list' }, { p: 'multiplexer', l: 'Multiplexer', ph: 'httpconnect' }],
+  stcp: [{ p: 'secretKey', l: '密钥 secretKey' }, { p: 'allowUsers', l: '允许用户 (逗号分隔)', t: 'list' }],
+  sudp: [{ p: 'secretKey', l: '密钥 secretKey' }, { p: 'allowUsers', l: '允许用户 (逗号分隔)', t: 'list' }],
+  xtcp: [{ p: 'secretKey', l: '密钥 secretKey' }, { p: 'allowUsers', l: '允许用户 (逗号分隔)', t: 'list' }],
+};
+const PROXY_COMMON_BOTTOM = [
+  { p: 'transport.useEncryption', l: '加密', t: 'bool' },
+  { p: 'transport.useCompression', l: '压缩', t: 'bool' },
+  { p: 'transport.bandwidthLimit', l: '带宽限制', ph: '1MB' },
+];
+const VISITOR_FIELDS = [
+  { p: 'type', l: '类型', t: 'select', o: ['stcp', 'xtcp', 'sudp'] },
+  { p: 'serverName', l: '服务名 serverName' },
+  { p: 'secretKey', l: '密钥 secretKey' },
+  { p: 'bindAddr', l: '绑定地址', ph: '127.0.0.1' },
+  { p: 'bindPort', l: '绑定端口', t: 'num' },
+];
+
+const $ = s => document.querySelector(s);
+function h(tag, attrs = {}, ...kids) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === 'class') el.className = v; else if (k.startsWith('on')) el[k] = v; else el.setAttribute(k, v);
+  }
+  kids.flat().forEach(c => el.append(c));
+  return el;
+}
+
+let mode = 'client';
+let data = {};
+const store = {};   // frpc / frps 各自独立的数据
+let parseTimer;
+
+function say(text, isErr) { const m = $('#msg'); m.textContent = text || ''; m.className = isErr ? 'err' : ''; }
+function sync() { $('#src').value = tomlStringify(data); say(''); }
+function changed(rerender) { sync(); if (rerender) render(); }
+
+function field(obj, f) {
+  const cur = getp(obj, f.p);
+  const label = h('label', { class: 'f' }, f.l);
+  let el;
+  if (f.t === 'select' || f.t === 'bool') {
+    const opts = f.t === 'bool' ? [['', '默认'], ['true', '是'], ['false', '否']] : f.o.map(o => [o, o || '(默认)']);
+    el = h('select', {}, opts.map(([v, t]) => h('option', { value: v }, t)));
+    let val = cur === undefined ? '' : String(cur);
+    if (![...el.options].some(o => o.value === val)) el.append(h('option', { value: val }, val));
+    el.value = val;
+    el.onchange = () => {
+      const v = el.value;
+      setp(obj, f.p, v === '' ? undefined : f.t === 'bool' ? v === 'true' : v);
+      changed(f.rerender);
+    };
+  } else {
+    el = h('input', { type: f.t === 'num' ? 'number' : 'text', placeholder: f.ph || '' });
+    el.value = cur === undefined ? '' : f.t === 'list' && Array.isArray(cur) ? cur.join(', ') : String(cur);
+    el.oninput = () => {
+      const v = el.value.trim(); let out;
+      if (v === '') out = undefined;
+      else if (f.t === 'num') out = Number.isFinite(Number(v)) ? Number(v) : undefined;
+      else if (f.t === 'list') { out = v.split(',').map(s => s.trim()).filter(Boolean); if (!out.length) out = undefined; }
+      else out = el.value;
+      setp(obj, f.p, out); sync();
+    };
+  }
+  label.append(el);
+  return label;
+}
+const grid = (obj, fields) => h('div', { class: 'grid' }, fields.map(f => field(obj, f)));
+
+function card(title, ...kids) { return h('div', { class: 'card' }, h('h2', {}, title), ...kids); }
+
+function proxyCard(arr, key, idx, topFields, byType) {
+  const p = arr[idx];
+  const head = h('div', { class: 'proxy-head' });
+  const name = h('input', { class: 'name', placeholder: '名称' }); name.value = p.name ?? '';
+  name.oninput = () => { setp(p, 'name', name.value || undefined); sync(); };
+  const del = h('button', { class: 'small danger' }, '删除');
+  del.onclick = () => { arr.splice(idx, 1); if (!arr.length) delete data[key]; changed(true); };
+  head.append(name, h('span', { class: 'spacer' }), del);
+  const fields = [...topFields, ...(byType ? (byType[p.type] || []) : [])];
+  return h('div', { class: 'proxy' }, head, grid(p, fields));
+}
+
+function renderClient(root) {
+  root.append(card('服务器连接', grid(data, CLIENT_FIELDS),
+    h('details', {}, h('summary', {}, '本地管理面板 webServer'), grid(data, ADV_WEB))));
+
+  const proxies = Array.isArray(data.proxies) ? data.proxies : [];
+  const pc = card('代理 proxies');
+  proxies.forEach((_, i) => pc.append(proxyCard(proxies, 'proxies', i,
+    [...PROXY_COMMON_TOP, ], PROXY_BY_TYPE)));
+  // common bottom fields appended per proxy
+  [...pc.querySelectorAll('.proxy')].forEach((el, i) => el.append(h('details', {}, h('summary', {}, '传输选项'), grid(proxies[i], PROXY_COMMON_BOTTOM))));
+  const add = h('button', {}, '+ 添加代理');
+  add.onclick = () => {
+    if (!Array.isArray(data.proxies)) data.proxies = [];
+    data.proxies.push({ name: 'proxy-' + (data.proxies.length + 1), type: 'tcp', localIP: '127.0.0.1', localPort: 80, remotePort: 6000 });
+    changed(true);
+  };
+  pc.append(add); root.append(pc);
+
+  const visitors = Array.isArray(data.visitors) ? data.visitors : [];
+  const vc = card('访问者 visitors (stcp / xtcp / sudp)');
+  visitors.forEach((_, i) => vc.append(proxyCard(visitors, 'visitors', i, VISITOR_FIELDS, null)));
+  const addv = h('button', {}, '+ 添加访问者');
+  addv.onclick = () => {
+    if (!Array.isArray(data.visitors)) data.visitors = [];
+    data.visitors.push({ name: 'visitor-' + (data.visitors.length + 1), type: 'stcp', serverName: '', secretKey: '', bindAddr: '127.0.0.1', bindPort: 9000 });
+    changed(true);
+  };
+  vc.append(addv); root.append(vc);
+}
+
+function renderServer(root) {
+  root.append(card('服务端基础', grid(data, SERVER_FIELDS)));
+
+  // allowPorts
+  const list = Array.isArray(data.allowPorts) ? data.allowPorts : [];
+  const ac = card('允许的远程端口 allowPorts');
+  ac.append(h('p', { class: 'hint' }, '范围填起止端口;只填"起始"则表示单个端口。不添加则不限制。'));
+  const writeBack = rows => { const out = rows.filter(r => r.s !== '').map(r => r.e === '' ? { single: Number(r.s) } : { start: Number(r.s), end: Number(r.e) }); setp(data, 'allowPorts', out.length ? out : undefined); };
+  const rows = list.map(o => 'single' in o ? { s: o.single, e: '' } : { s: o.start ?? '', e: o.end ?? '' });
+  rows.forEach((r, i) => {
+    const s = h('input', { type: 'number', placeholder: '起始' }); s.value = r.s;
+    const e = h('input', { type: 'number', placeholder: '结束(可空)' }); e.value = r.e;
+    s.oninput = () => { r.s = s.value; writeBack(rows); sync(); };
+    e.oninput = () => { r.e = e.value; writeBack(rows); sync(); };
+    const del = h('button', { class: 'small danger' }, '删除');
+    del.onclick = () => { rows.splice(i, 1); writeBack(rows); changed(true); };
+    ac.append(h('div', { class: 'row' }, s, '-', e, del));
+  });
+  const add = h('button', {}, '+ 添加范围');
+  add.onclick = () => { rows.push({ s: 6000, e: 7000 }); writeBack(rows); changed(true); };
+  ac.append(add); root.append(ac);
+
+  root.append(card('Dashboard (webServer)', grid(data, [
+    { p: 'webServer.addr', l: '地址', ph: '0.0.0.0' }, { p: 'webServer.port', l: '端口', t: 'num', ph: '7500' },
+    { p: 'webServer.user', l: '用户名' }, { p: 'webServer.password', l: '密码' }])));
+
+  const rnd = h('button', {}, '生成随机 Token');
+  rnd.onclick = () => {
+    const b = crypto.getRandomValues(new Uint8Array(16));
+    setp(data, 'auth.token', [...b].map(x => x.toString(16).padStart(2, '0')).join(''));
+    changed(true);
+  };
+  root.append(h('div', { class: 'card' }, rnd));
+}
+
+function render() {
+  const root = $('#form'); root.replaceChildren();
+  if (data.common) root.append(h('div', { class: 'card' }, '⚠ 检测到旧版 INI 格式([common]),本工具只支持 frp 0.52+ 的 TOML 格式。'));
+  mode === 'client' ? renderClient(root) : renderServer(root);
+  document.querySelectorAll('#modeSeg button').forEach(b => b.classList.toggle('on', b.dataset.m === mode));
+}
+
+function detect(d) {
+  if (d.serverAddr !== undefined || d.proxies || d.visitors || d.serverPort !== undefined) return 'client';
+  if (d.bindPort !== undefined || d.vhostHTTPPort !== undefined || d.allowPorts) return 'server';
+  return mode;
+}
+function template(m) {
+  return m === 'client'
+    ? { serverAddr: '', serverPort: 7000, proxies: [{ name: 'ssh', type: 'tcp', localIP: '127.0.0.1', localPort: 22, remotePort: 6000 }] }
+    : { bindPort: 7000 };
+}
+function load(text, autodetect) {
+  try {
+    const d = tomlParse(text);
+    if (autodetect) mode = detect(d);
+    store[mode] = data = d;
+    render(); return true;
+  } catch (e) { say(e.message, true); return false; }
+}
+
+/* events */
+$('#modeSeg').onclick = e => { const m = e.target.dataset.m; if (m && m !== mode) { mode = m; data = store[m]; render(); sync(); } };
+$('#src').oninput = () => {
+  clearTimeout(parseTimer);
+  parseTimer = setTimeout(() => { if (load($('#src').value, false)) say('已解析', false); }, 250);
+};
+$('#btnNew').onclick = () => { if (confirm('用模板替换当前内容?')) { store[mode] = data = template(mode); render(); sync(); } };
+$('#btnOpen').onclick = () => $('#file').click();
+$('#file').onchange = async e => { const f = e.target.files[0]; if (f) await importFile(f); e.target.value = ''; };
+async function importFile(f) {
+  const text = await f.text();
+  $('#src').value = text;
+  if (load(text, true)) say('已导入为' + (mode === 'client' ? ' frpc 客户端' : ' frps 服务端') + '配置:' + f.name + '(注释不会保留)', false);
+}
+$('#btnCopy').onclick = async () => {
+  try { await navigator.clipboard.writeText($('#src').value); say('已复制'); }
+  catch { $('#src').select(); document.execCommand('copy'); say('已复制'); }
+};
+$('#btnDl').onclick = () => {
+  const a = h('a', { href: URL.createObjectURL(new Blob([$('#src').value], { type: 'text/plain' })), download: mode === 'client' ? 'frpc.toml' : 'frps.toml' });
+  document.body.append(a); a.click(); a.remove();
+};
+let dragDepth = 0;
+addEventListener('dragenter', e => { e.preventDefault(); dragDepth++; $('#drop').style.display = 'flex'; });
+addEventListener('dragleave', () => { if (--dragDepth <= 0) { dragDepth = 0; $('#drop').style.display = 'none'; } });
+addEventListener('dragover', e => e.preventDefault());
+addEventListener('drop', e => { e.preventDefault(); dragDepth = 0; $('#drop').style.display = 'none'; const f = e.dataTransfer.files[0]; if (f) importFile(f); });
+
+store.client = template('client'); store.server = template('server');
+data = store.client; render(); sync();
+</script>
+</body>
+</html>
